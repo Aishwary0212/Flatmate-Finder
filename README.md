@@ -1,7 +1,4 @@
----
-
 # System Architecture
-
 ```
                    +-------------------------+
                    |     React + Vite        |
