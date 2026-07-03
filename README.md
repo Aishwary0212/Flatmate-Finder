@@ -1,332 +1,388 @@
-# NestMatch
+---
 
-A modern, AI-powered rental matching platform that connects tenants with compatible properties and vice versa. Built with React, Node.js, and MongoDB.
-
-## Features
-
-- **AI Compatibility Scoring**: Algorithm-based matching between tenant preferences and property characteristics
-- **Tenant Browse & Search**: Browse available listings with advanced filtering (location, rent range)
-- **Interest Management**: Tenants can send interests and track responses from property owners
-- **Real-time Messaging**: Chat with matched tenants/owners after interest acceptance
-- **Property Management**: Owners can create, edit, and manage multiple listings
-- **Automatic Notifications**: Email alerts for high-compatibility matches and interest responses
-- **Image Gallery**: Multiple photo support for property listings with Cloudinary integration
-- **User Profiles**: Complete tenant profile management with preferences for AI scoring
-
-## Tech Stack
-
-### Frontend
-
-- **React 18** with Vite (fast build tool)
-- **React Router v7** for navigation
-- **Zustand** for state management (auth store)
-- **Tailwind CSS** for styling
-- **Lucide React** for icons
-- **React Hot Toast** for notifications
-- **Axios** with custom interceptors for API calls
-
-### Backend
-
-- **Node.js** with Express.js
-- **MongoDB** with Mongoose ODM
-- **JWT** for authentication
-- **Cloudinary** for image uploads
-- **Nodemailer** for email notifications
-- **Zod** for request validation
-- **Socket.io** for real-time messaging
-
-## Project Structure
+# System Architecture
 
 ```
-unthinkable2/
-├── backend/
-│   ├── src/
-│   │   ├── server.js              # Express app entry
-│   │   ├── config/
-│   │   │   └── db.js              # MongoDB connection
-│   │   ├── controllers/           # Business logic
-│   │   │   ├── auth.controller.js
-│   │   │   ├── listing.controller.js
-│   │   │   ├── interest.controller.js
-│   │   │   ├── message.controller.js
-│   │   │   └── profile.controller.js
-│   │   ├── models/                # Mongoose schemas
-│   │   │   ├── User.js
-│   │   │   ├── Listing.js
-│   │   │   ├── Interest.js
-│   │   │   ├── TenantProfile.js
-│   │   │   ├── Message.js
-│   │   │   └── CompatibilityScore.js
-│   │   ├── routes/                # API endpoints
-│   │   │   ├── auth.routes.js
-│   │   │   ├── listing.routes.js
-│   │   │   ├── interest.routes.js
-│   │   │   ├── message.routes.js
-│   │   │   ├── profile.routes.js
-│   │   │   └── upload.routes.js
-│   │   ├── middleware/
-│   │   │   └── auth.middleware.js # JWT verification
-│   │   ├── services/              # Utility functions
-│   │   │   ├── compatibility.service.js
-│   │   │   ├── email.service.js
-│   │   │   ├── cloudinary.js
-│   │   │   └── socket.service.js
-│   │   └── validators/
-│   │       └── auth.validator.js
-│   ├── .env                       # Environment variables
-│   └── package.json
-│
-├── frontend/
-│   ├── src/
-│   │   ├── main.jsx               # React entry point
-│   │   ├── App.jsx                # Routes config
-│   │   ├── index.css              # Global styles
-│   │   ├── App.css                # App styles
-│   │   ├── lib/
-│   │   │   └── api.js             # Axios instance with interceptors
-│   │   ├── store/
-│   │   │   └── authStore.js       # Zustand auth store
-│   │   ├── components/
-│   │   │   ├── ChatWindow.jsx     # Real-time messaging
-│   │   │   ├── ListingCard.jsx    # Listing display component
-│   │   │   └── TenantProfileForm.jsx
-│   │   ├── pages/
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── Dashboard.jsx      # Main dashboard (tenant & owner)
-│   │   │   ├── ListingDetail.jsx  # Property detail page
-│   │   │   └── Profile.jsx        # User profile page
-│   │   └── assets/                # Static assets
-│   ├── index.html                 # HTML template
-│   ├── vite.config.js             # Vite configuration
-│   ├── eslint.config.js           # Linting rules
-│   └── package.json
-│
-└── README.md & systemdesign.md
+                   +-------------------------+
+                   |     React + Vite        |
+                   |  (Frontend Dashboard)   |
+                   +-----------+-------------+
+                               |
+                         Axios + JWT
+                               |
+                               v
+                   +-------------------------+
+                   |    Express.js Backend   |
+                   | Authentication          |
+                   | Listings               |
+                   | Interests              |
+                   | Messages               |
+                   | Compatibility Service  |
+                   +-----+-----------+------+
+                         |           |
+                         |           |
+                  MongoDB           Socket.io
+                         |           |
+                         |           |
+                  Compatibility      Real-time Chat
+                  Scores             Notifications
+                         |
+                         |
+               +---------+----------+
+               |                    |
+         Cloudinary           Nodemailer
+     (Image Storage)      (Email Service)
 ```
 
-## Installation & Setup
+---
 
-### Prerequisites
+# Database Schema
 
-- Node.js (v16+)
-- MongoDB (local or Atlas)
-- Cloudinary account (for image uploads)
-- Nodemailer SMTP credentials
+### Collections
 
-### Backend Setup
+### Users
 
-1. **Install dependencies**
-
-   ```bash
-   cd backend
-   npm install
-   ```
-
-2. **Create `.env` file** with:
-
-   ```
-   PORT=5000
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/nestmatch
-   JWT_SECRET=your_jwt_secret_key
-   CLOUDINARY_CLOUD_NAME=your_cloud_name
-   CLOUDINARY_API_KEY=your_api_key
-   CLOUDINARY_API_SECRET=your_api_secret
-   SMTP_EMAIL=your_email@gmail.com
-   SMTP_PASSWORD=your_app_password
-   FRONTEND_URL=http://localhost:5173
-   NODE_ENV=development
-   ```
-
-3. **Start the server**
-   ```bash
-   npm run dev
-   ```
-   Server will run on `http://localhost:5000`
-
-### Frontend Setup
-
-1. **Install dependencies**
-
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-2. **Create `.env` file** with:
-
-   ```
-   VITE_API_BASE_URL=http://localhost:5000/api
-   ```
-
-3. **Start the dev server**
-   ```bash
-   npm run dev
-   ```
-   Frontend will run on `http://localhost:5173`
-
-## API Endpoints
-
-### Authentication
-
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
+```javascript
+{
+  _id,
+  name,
+  email,
+  password,
+  role, // TENANT | OWNER | ADMIN
+  avatar,
+  createdAt,
+  updatedAt
+}
+```
 
 ### Listings
 
-- `GET /api/listings/browse` - Get available listings (with filters)
-- `GET /api/listings/:id` - Get listing details
-- `GET /api/listings/my-listings` - Get user's listings (owner)
-- `POST /api/listings` - Create new listing
-- `PATCH /api/listings/:id/fill` - Mark listing as filled
-- `PATCH /api/listings/:id/unfill` - Mark listing as unfilled
-- `DELETE /api/listings/:id` - Delete listing
-- `POST /api/listings/upload` - Upload listing images
+```javascript
+{
+  _id,
+  ownerId,
+  title,
+  description,
+  location,
+  rent,
+  roomType,
+  furnishingStatus,
+  availableFrom,
+  photos,
+  isFilled,
+  createdAt
+}
+```
+
+### TenantProfiles
+
+```javascript
+{
+  _id,
+  userId,
+  preferredLocation,
+  budget,
+  moveInDate,
+  preferences
+}
+```
 
 ### Interests
 
-- `POST /api/interests` - Send interest to a listing
-- `GET /api/interests/sent` - Get interests sent by tenant
-- `GET /api/interests/received` - Get interests received on listings (owner)
-- `PATCH /api/interests/:id/respond` - Accept/decline interest
-- `DELETE /api/interests/:id` - Remove/withdraw interest
+```javascript
+{
+  _id,
+  tenantId,
+  listingId,
+  status, // PENDING | ACCEPTED | DECLINED
+  compatibilityScore,
+  explanation
+}
+```
 
 ### Messages
 
-- `GET /api/messages/:interestId` - Get chat history
-- `POST /api/messages` - Send message
-
-### Profile
-
-- `GET /api/profile` - Get user profile
-- `PUT /api/profile` - Update user profile
-- `POST /api/profile/tenant` - Create/update tenant preferences
-
-## Usage Flow
-
-### For Tenants
-
-1. **Register** as a tenant
-2. **Complete Profile** with preferences (area type, budget, etc.)
-3. **Browse Listings** with AI compatibility scores
-4. **Send Interest** to desired properties
-5. **Receive Responses** from property owners
-6. **Chat** with owners when interest is accepted
-7. **View/Manage** all sent interests in dashboard
-
-### For Property Owners
-
-1. **Register** as an owner
-2. **Create Listings** with photos, rent, and details
-3. **Receive Interests** from tenants
-4. **Respond** to interests (accept/decline)
-5. **Chat** with accepted tenants
-6. **Manage Status** (mark as filled/unfilled)
-
-## Key Features Implementation
-
-### AI Compatibility Scoring
-
-- Analyzes tenant preferences (budget, area type, commute distance)
-- Compares with listing characteristics
-- Returns percentage match score
-- Triggers email notifications for matches > 80%
-
-### Interest Management
-
-- Tenants send interests to listings
-- Owners accept/decline with email notifications
-- Interests can be withdrawn anytime
-- Track status: PENDING, ACCEPTED, DECLINED
-
-### Real-time Messaging
-
-- Socket.io integration for live chat
-- Message history persistence
-- Only available after interest acceptance
-
-### Image Management
-
-- Cloudinary integration for image uploads
-- Multiple images per listing
-- Fallback to URL input if upload fails
-- Image optimization and CDN delivery
-
-## Development
-
-### Running Tests
-
-```bash
-# Backend
-cd backend
-npm test
-
-# Frontend
-cd frontend
-npm run test
+```javascript
+{
+  _id,
+  interestId,
+  senderId,
+  receiverId,
+  message,
+  createdAt
+}
 ```
 
-### Code Quality
+### CompatibilityScores
 
-```bash
-# Lint frontend
-cd frontend
-npx eslint --ext .jsx src/
-
-# Lint backend
-cd backend
-npx eslint src/
+```javascript
+{
+  _id,
+  tenantId,
+  listingId,
+  score,
+  explanation,
+  createdAt
+}
 ```
 
-### Build for Production
+---
 
-**Frontend:**
+# Entity Relationship
 
-```bash
-cd frontend
-npm run build
+```
+User (Owner)
+     |
+     | 1:N
+     |
+ Listings
+     |
+     | 1:N
+ Interests
+     |
+     | 1:N
+ Messages
+
+User (Tenant)
+     |
+     | 1:1
+TenantProfile
+
+TenantProfile
+      |
+      | N:M
+      |
+CompatibilityScore
+      |
+      |
+Listing
 ```
 
-**Backend:**
-Ensure `.env` is configured for production and run with `NODE_ENV=production npm start`
+---
 
-## Troubleshooting
+# LLM Compatibility Prompt
 
-### MongoDB Connection Issues
+The compatibility engine receives the tenant profile and listing details and returns a compatibility score with an explanation.
 
-- Verify connection string in `.env`
-- Check MongoDB Atlas IP whitelist includes your IP
-- Ensure credentials are correct
+### Prompt
 
-### Image Upload Fails
+```text
+Given this room listing:
 
-- Verify Cloudinary credentials in `.env`
-- Check image file size < 10MB
-- Fallback to URL input
+Location:
+Rent:
+Room Type:
+Available From:
 
-### JWT Token Expired
+and this tenant profile:
 
-- Frontend will automatically redirect to login
-- Clear local storage and re-login
+Preferred Location:
+Budget:
+Move-in Date:
 
-### Socket.io Connection Issues
+Compute a compatibility score between 0 and 100 based primarily on:
 
-- Verify backend server is running
-- Check CORS settings in server.js
-- Ensure frontend API URL matches backend
+- Budget match
+- Location match
+- Room type compatibility
 
-## Contributing
+Return JSON only.
 
-1. Create a feature branch (`git checkout -b feature/new-feature`)
-2. Commit changes (`git commit -am 'Add new feature'`)
-3. Push to branch (`git push origin feature/new-feature`)
-4. Create a Pull Request
+{
+  "score": number,
+  "explanation": string
+}
+```
 
-## License
+### Example Input
 
-This project is licensed under the MIT License.
+```json
+{
+  "listing": {
+    "location": "Bangalore",
+    "rent": 12000,
+    "roomType": "Private"
+  },
+  "tenant": {
+    "preferredLocation": "Bangalore",
+    "budget": 13000,
+    "moveInDate": "2026-08-01"
+  }
+}
+```
 
-## Support
+### Example Output
 
-For issues, questions, or suggestions, please open an issue on the repository.
+```json
+{
+  "score": 92,
+  "explanation": "Excellent location match and rent is within the preferred budget."
+}
+```
+
+---
+
+# LLM Fallback Strategy
+
+If the LLM service is unavailable or times out, NestMatch automatically switches to a rule-based scoring algorithm.
+
+Weight distribution:
+
+| Parameter | Weight |
+|-----------|--------|
+| Budget Match | 40% |
+| Location Match | 30% |
+| Room Type Match | 20% |
+| Amenities Match | 10% |
+
+Example fallback explanation:
+
+```
+Budget matches your preference.
+Preferred location is available.
+Room type matches your requirement.
+Some optional amenities are unavailable.
+```
+
+Both the score and explanation are stored in MongoDB so they are not recomputed on every request.
+
+---
+
+# Compatibility Score Workflow
+
+```
+Tenant opens Listing
+        |
+        v
+Fetch Tenant Profile
+        |
+        v
+Calculate Compatibility
+        |
+        +------------+
+        |            |
+        | LLM Works  |
+        |            |
+        +-----+------+
+              |
+              |
+        Store Score
+              |
+              |
+         Return Result
+              |
+              |
+       Show Compatibility
+
+If LLM fails
+
+Rule-Based Algorithm
+        |
+Store Result
+        |
+Return Score
+```
+
+---
+
+# Real-Time Chat Flow
+
+```
+Tenant sends Interest
+        |
+Owner Accepts
+        |
+WebSocket Connection Created
+        |
+Messages exchanged through Socket.io
+        |
+Messages stored in MongoDB
+        |
+Conversation restored whenever users reconnect
+```
+
+---
+
+# Email Notification Flow
+
+```
+Tenant sends Interest
+        |
+Calculate Compatibility
+        |
+Score > 80 ?
+     /       \
+   Yes       No
+   |          |
+Notify Owner  Skip
+   |
+Owner Accepts / Declines
+   |
+Notify Tenant
+```
+
+---
+
+# Hosted Application
+
+### Frontend
+
+```
+https://your-vercel-url.vercel.app
+```
+
+### Backend
+
+```
+https://your-render-url.onrender.com
+```
+
+---
+
+# Environment Variables
+
+## Backend (.env.example)
+
+```env
+PORT=5000
+
+MONGODB_URI=
+
+JWT_SECRET=
+
+CLOUDINARY_CLOUD_NAME=
+
+CLOUDINARY_API_KEY=
+
+CLOUDINARY_API_SECRET=
+
+SMTP_EMAIL=
+
+SMTP_PASSWORD=
+
+FRONTEND_URL=http://localhost:5173
+
+NODE_ENV=development
+```
+
+## Frontend (.env.example)
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+---
+
+# Future Enhancements
+
+- AI-based roommate recommendation
+- Google Maps integration
+- Push notifications
+- Payment gateway integration
+- Saved listings
+- Review & rating system
+- Mobile application (React Native)
+- Two-factor authentication (2FA)
+- Analytics dashboard for property owners
+
+---
