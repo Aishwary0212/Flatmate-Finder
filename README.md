@@ -341,31 +341,21 @@ https://your-render-url.onrender.com
 ## Backend (.env.example)
 
 ```env
-PORT=5000
-
 MONGODB_URI=
-
-JWT_SECRET=
-
-CLOUDINARY_CLOUD_NAME=
-
+PORT=3000
+JWT_SECRET=ssshhh
+GROQ_API_KEY=
+RESEND_API_KEY=
+EMAIL_FROM=
 CLOUDINARY_API_KEY=
-
 CLOUDINARY_API_SECRET=
-
-SMTP_EMAIL=
-
-SMTP_PASSWORD=
-
-FRONTEND_URL=http://localhost:5173
-
-NODE_ENV=development
-```
+CLOUDINARY_CLOUD_NAME=
+CLIENT_ORIGIN=```
 
 ## Frontend (.env.example)
 
 ```env
-VITE_API_BASE_URL=http://localhost:5000/api
+VITE_API_BASE_URL={url}/api
 ```
 
 ---
