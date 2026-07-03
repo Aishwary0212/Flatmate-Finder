@@ -27,7 +27,7 @@
                          |
                +---------+----------+
                |                    |
-         Cloudinary           Nodemailer
+         Cloudinary              Resend
      (Image Storage)      (Email Service)
 ```
 
